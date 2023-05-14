@@ -30,4 +30,4 @@ class BIOS:
 
         del sim.workers[sim.workers.index(worker)]
 
-        sim.workers.append(hy_loader.Loader(sim, "system.img"))
+        sim.workers.append(hy_loader.Loader(sim))

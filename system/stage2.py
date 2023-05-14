@@ -1,20 +1,21 @@
 from dataclasses import dataclass
 
 class Stage2:
-    def __init__(self, sim, fs, tty):
+    def __init__(self, sim, tty):
         self.sim = sim
         self.tty = tty
-        self.fs = fs
-        self.vfs_code = fs.read_file("vfs.py").decode('utf-8')
 
-        exec(self.vfs_code, globals())
-
-        self.vfs = VFS()
-        self.memfs = MemoryFS()
-
-        self.vfs.add_mountpoint_obj(self.memfs.mountpoint)
-
+        self.tty.putsf("Stage 2!\n")
+        
         self.start()
 
+    def exec_extern(self, filename):
+        with open(filename, "r") as f:
+            exec(f.read(), globals())
+
     def start(self):
-        self.tty.putsf("Stage 2!\n")
+        self.exec_extern("system/desktop/riolu_desktop.py")
+
+        desktop = Desktop(self.sim, self.tty)
+
+        desktop.start()

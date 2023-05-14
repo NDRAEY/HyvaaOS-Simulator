@@ -1,2 +1,2 @@
+toml==0.10.2
 pygame==2.4.0
-https://github.com/NDRAEY/LucarioFS/archive/main.zip
