@@ -1,3 +1,5 @@
+import os
+
 import pygame
 import hy_tty
 
@@ -28,4 +30,4 @@ class BIOS:
 
         del sim.workers[sim.workers.index(worker)]
 
-        # sim.workers.append(hy_loader.Loader())
+        sim.workers.append(hy_loader.Loader(sim, "system.img"))

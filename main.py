@@ -4,7 +4,7 @@ pygame.init()
 
 class Simulator:
     def __init__(self):
-        self.screen = pygame.display.set_mode((800, 600))
+        self.screen: pygame.Surface = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("HyvaaOS")
 
         self.handlers = []
@@ -20,8 +20,6 @@ class Simulator:
             else:
                 for i in self.handlers:
                     i(self, event)
-                
-                print("Other event:", event.type)
 
     def run(self):
         while True:
