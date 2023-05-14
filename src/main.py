@@ -1,6 +1,7 @@
 import pygame
 
 pygame.init()
+pygame.mouse.set_visible(False)
 
 class Simulator:
     def __init__(self):

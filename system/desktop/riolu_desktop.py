@@ -1,7 +1,11 @@
-import pygame
-import io
+import sys
 
+sys.path.insert(0, "./system/desktop")
+
+import pygame
 import toml
+
+import window_system
 
 class Desktop:
     def __init__(self, sim, tty):
@@ -31,7 +35,9 @@ class Desktop:
             self.screen.get_height(),
         ))
 
-        pygame.mouse.set_visible(False)
+        self.winsys = window_system.WindowSystem(self.screen)
+
+        self.winsys.new_window("Lucario", 150, 150, 70)
 
     def start(self):
         self.sim.workers.append(self.render)
@@ -42,6 +48,8 @@ class Desktop:
             self.background,
             (0, 0)
         )
+
+        self.winsys.render_windows()
 
         self.draw_cursor()
 

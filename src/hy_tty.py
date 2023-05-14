@@ -12,7 +12,7 @@ class TTY:
         self.surface = sfc
 
     def putchar(self, char):
-        ch = self.font.render(char[0], True, self.color)
+        ch = self.font.render(char[0], False, self.color)
         
         if char == "\n":
             self.y += ch.get_height()
