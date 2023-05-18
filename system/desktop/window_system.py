@@ -5,7 +5,7 @@ TITLEBAR_HEIGHT = 35
 
 @dataclass
 class Window:
-    name: str | None
+    name: str
     widgets: list
     on_click: object
     on_hover: object
