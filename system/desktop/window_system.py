@@ -40,7 +40,7 @@ class WindowSystem:
             Window(
                 name,
                 [],
-                lambda: ...,
+                lambda: print("Click!"),
                 lambda: ...,
 
                 True,
@@ -143,13 +143,18 @@ class WindowSystem:
         win = self.get_titlebar_win_by_coord(x, y)
 
         if win:
-            clsbtn = self.get_closebtn_win_by_coord(x, y)
+            win = self.get_closebtn_win_by_coord(x, y)
 
-            if clsbtn:
-                del self.windows[self.windows.index(clsbtn)]
+            if win:
+                del self.windows[self.windows.index(win)]
             else:
                 self.dragging = win
                 self.dcoords = win.x - x, win.y - y
+        else:
+            win = self.get_win_by_coord(x, y)
+
+            if win and win.on_click:
+                win.on_click(self, event)
 
     def move_action(self, desktop, event):
         if self.dragging:
