@@ -38,6 +38,11 @@ class Simulator:
 if __name__ == "__main__":
     import hy_bios
 
+    import os
+
+    if os.getcwd().endswith("src"):
+        os.chdir("..")
+
     sim = Simulator()
     
     sim.workers.append(hy_bios.BIOS(sim))

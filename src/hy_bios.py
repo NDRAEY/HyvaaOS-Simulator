@@ -9,7 +9,7 @@ class BIOS:
     def __init__(self, sim):
         self.tty = hy_tty.TTY(sim.screen, "Monotype", 18)
         self.logo = pygame.image.load("res/bios.png")
-        
+
     def __call__(self, sim, worker):
         self.tty.puts("LirBIOS v1.0 by NDRAEY\n")
         sim.screen.blit(self.logo, (

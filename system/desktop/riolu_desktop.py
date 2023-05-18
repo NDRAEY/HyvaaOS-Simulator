@@ -35,9 +35,9 @@ class Desktop:
             self.screen.get_height(),
         ))
 
-        self.winsys = window_system.WindowSystem(self.screen)
+        self.winsys = window_system.WindowSystem(self)
 
-        self.winsys.new_window("Lucario", 150, 150, 70)
+        self.winsys.new_window("Lucario", 150, 150, 200)
 
     def start(self):
         self.sim.workers.append(self.render)
@@ -67,11 +67,10 @@ class Desktop:
 
     def input_handler(self, sim, event: pygame.event.Event):
         if event.type == pygame.MOUSEMOTION:
-
             self.mouse_coords = event.pos
-        else:
-            for i in self.external_events:
-                ev, fn = i
 
-                if ev == event.type:
-                    fn(self, event)
+        for i in self.external_events:
+            ev, fn = i
+
+            if ev == event.type:
+                fn(self, event)
