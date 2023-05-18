@@ -40,8 +40,8 @@ class WindowSystem:
             Window(
                 name,
                 [],
-                lambda: print("Click!"),
-                lambda: ...,
+                lambda desktop, event: print("Click!"),
+                lambda desktop, event: ...,
 
                 True,
                 True,
@@ -143,10 +143,10 @@ class WindowSystem:
         win = self.get_titlebar_win_by_coord(x, y)
 
         if win:
-            win = self.get_closebtn_win_by_coord(x, y)
+            subwin = self.get_closebtn_win_by_coord(x, y)
 
-            if win:
-                del self.windows[self.windows.index(win)]
+            if subwin:
+                del self.windows[self.windows.index(subwin)]
             else:
                 self.dragging = win
                 self.dcoords = win.x - x, win.y - y
