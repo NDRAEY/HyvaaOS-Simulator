@@ -1,23 +1,27 @@
+import dataclasses
+
 import pygame
 from dataclasses import dataclass
+
+import widget
 
 TITLEBAR_HEIGHT = 35
 
 @dataclass
 class Window:
     name: str
-    widgets: list
+    widgets: list[widget.Widget]
     on_click: object
     on_hover: object
     
     closable: bool
-    maximizable: bool
+    has_titlebar: bool
 
     x: int
     y: int
-
     width: int
     height: int
+    surface: pygame.surface.Surface
 
 class WindowSystem:
     def __init__(self, desktop):
@@ -35,94 +39,108 @@ class WindowSystem:
         self.dragging = None
         self.dcoords = None
     
-    def new_window(self, name="Untitled", x=0, y=0, width=100, height=100):
+    def new_window(self, name="Untitled", x=0, y=0, width=100, height=100, titlebar=True):
         self.windows.append(
             Window(
                 name,
                 [],
-                lambda desktop, event: print("Click!"),
+                lambda desktop, event: ...,
                 lambda desktop, event: ...,
 
                 True,
-                True,
+                titlebar,
 
                 x,
                 y,
                 width,
-                height
+                height,
+
+                pygame.surface.Surface((width, height))
             )
         )
-    
+
+        # pygame.draw.rect(self.windows[-1].surface, (0, 0, 255), (0, 0, self.windows[-1].surface.get_width(), self.windows[-1].surface.get_height()))
+        self.windows[-1].surface.fill((0, 0, 0))
+
+        return self.windows[-1]
+
     def render_window(self, window: Window):
-        name = window.name  # [:(window.width + 10) // (22)]
+        name = window.name[:(window.width + 10) // (22)]
 
         if name != window.name:
             name += "..."
         
         rendered_name = self.sysfont.render(name, True, (0, 0, 0))
 
-        # Canvas
-        pygame.draw.rect(
-            self.screen,
-            (67, 231, 33),
-            (window.x, window.y, window.width, window.height)
-        )
-
-        # Name
-        self.screen.blit(
-            rendered_name,
-            (window.x + 10, ((32 - rendered_name.get_height()) // 2) + window.y)
-        )
-
-        if window.closable:
-            # Close button
+        if window.has_titlebar:
+            # Titlebar 
             pygame.draw.rect(
                 self.screen,
-                (255, 0, 0),
-                (window.x + window.width - TITLEBAR_HEIGHT, window.y, TITLEBAR_HEIGHT, TITLEBAR_HEIGHT)
+                (0, 231, 255),
+                (window.x, window.y, window.width, TITLEBAR_HEIGHT)
             )
 
-            pygame.draw.line(
-                self.screen,
-                (0, 0, 0),
-                (window.x + window.width - TITLEBAR_HEIGHT + 5, window.y + 5),
-                (window.x + window.width - 5, window.y + TITLEBAR_HEIGHT - 5),
-                3
+            # Name
+            self.screen.blit(
+                rendered_name,
+                (window.x + 10, ((32 - rendered_name.get_height()) // 2) + window.y)
             )
 
-            pygame.draw.line(
-                self.screen,
-                (0, 0, 0),
-                (window.x + window.width - 5, window.y + 5),
-                (window.x + window.width - TITLEBAR_HEIGHT + 5, window.y + TITLEBAR_HEIGHT - 5),
-                3
-            )
+            if window.closable:
+                # Close button
+                pygame.draw.rect(
+                    self.screen,
+                    (255, 0, 0),
+                    (window.x + window.width - TITLEBAR_HEIGHT, window.y, TITLEBAR_HEIGHT, TITLEBAR_HEIGHT)
+                )
 
-        # Titlebar
-        pygame.draw.rect(
-            self.screen,
-            (0, 128, 128),
-            (window.x, window.y + TITLEBAR_HEIGHT, window.width, window.height)
+                pygame.draw.line(
+                    self.screen,
+                    (0, 0, 0),
+                    (window.x + window.width - TITLEBAR_HEIGHT + 5, window.y + 5),
+                    (window.x + window.width - 5, window.y + TITLEBAR_HEIGHT - 5),
+                    3
+                )
+
+                pygame.draw.line(
+                    self.screen,
+                    (0, 0, 0),
+                    (window.x + window.width - 5, window.y + 5),
+                    (window.x + window.width - TITLEBAR_HEIGHT + 5, window.y + TITLEBAR_HEIGHT - 5),
+                    3
+                )
+
+        window.surface = pygame.transform.scale(
+            window.surface,
+            (window.width, window.height)
         )
+
+        for i in window.widgets:
+            i.render()
+        
+        # Window content
+        self.screen.blit(
+            window.surface,
+            (window.x, window.y + TITLEBAR_HEIGHT)
+        )
+
 
     def render_windows(self):
         for i in self.windows:
+            i.surface.fill((64, 64, 64))
+
             self.render_window(i)
 
     def get_win_by_coord(self, x, y):
         for i in self.windows:
-            if (x >= i.x and
-              x <= i.x + i.width and
-              y >= i.y and
-              y <= i.y + i.height):
+            if (i.x <= x <= i.x + i.width and
+                    i.y <= y <= i.y + i.height):
                 return i
 
     def get_titlebar_win_by_coord(self, x, y):
         for i in self.windows:
-            if (x >= i.x and
-              x <= i.x + i.width and
-              y >= i.y and
-              y <= i.y + TITLEBAR_HEIGHT):
+            if (i.x <= x <= i.x + i.width and
+                    i.y <= y <= i.y + TITLEBAR_HEIGHT):
                 return i
 
     def get_closebtn_win_by_coord(self, x, y):
@@ -130,12 +148,11 @@ class WindowSystem:
 
         relp = win.x - (x - win.width)
 
-        if relp >= 0 and relp <= TITLEBAR_HEIGHT:
+        if 0 <= relp <= TITLEBAR_HEIGHT and win.closable and win.has_titlebar:
             return win
 
     def up_action(self, desktop, event: pygame.event.Event):
         self.dragging = None
-        self.drag_start = None
 
     def down_action(self, desktop, event):
         x, y = event.pos
@@ -147,7 +164,7 @@ class WindowSystem:
 
             if subwin:
                 del self.windows[self.windows.index(subwin)]
-            else:
+            elif win.has_titlebar:
                 self.dragging = win
                 self.dcoords = win.x - x, win.y - y
         else:

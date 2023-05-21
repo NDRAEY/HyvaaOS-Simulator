@@ -5,6 +5,8 @@ sys.path.insert(0, "./system/desktop")
 import pygame
 import toml
 
+import widget
+
 import window_system
 
 class Desktop:
@@ -37,7 +39,8 @@ class Desktop:
 
         self.winsys = window_system.WindowSystem(self)
 
-        self.winsys.new_window("Lucario", 150, 150, 200)
+        window = self.winsys.new_window("Lucario", 150, 150, 600)
+        window.widgets.append(widget.Button(window, "HELLO WORLD", 10, 10))
 
     def start(self):
         self.sim.workers.append(self.render)
@@ -52,6 +55,8 @@ class Desktop:
         self.winsys.render_windows()
 
         self.draw_cursor()
+
+        # self.winsys.windows[0].widgets[0].width += 1
 
         pygame.display.flip()
 
