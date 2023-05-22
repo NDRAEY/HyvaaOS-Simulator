@@ -2,6 +2,13 @@ import os
 import pygame
 import hy_tty
 
+import sys
+
+sys.path.insert(0, "..")
+sys.path.insert(0, ".")
+
+from system.stage2 import Stage2
+
 class Loader:
     def __init__(self, sim):
         self.sim = sim
@@ -37,11 +44,6 @@ class Loader:
 
         glbs = {}
         locs = {}
-
-        with open("system/stage2.py") as f:
-            exec(f.read(), glbs, locs)
-
-        Stage2 = locs['Stage2']
 
         del sim.workers[sim.workers.index(worker)]
         

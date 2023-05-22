@@ -5,7 +5,8 @@ pygame.mouse.set_visible(False)
 
 class Simulator:
     def __init__(self):
-        self.screen: pygame.Surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # self.screen: pygame.Surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen: pygame.Surface = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("HyvaaOS")
 
         self.handlers = []
@@ -37,10 +38,10 @@ class Simulator:
 
 if __name__ == "__main__":
     import hy_bios
-
     import os
 
     if os.getcwd().endswith("src"):
+        print("Changed dir!")
         os.chdir("..")
 
     sim = Simulator()
