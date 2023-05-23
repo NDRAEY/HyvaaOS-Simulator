@@ -8,7 +8,7 @@ class Calculator:
         self.val = ""
         self.widget_names = "789C456+123-0/*="
 
-        self.result_label = widget.Label(self.window, self.val, 25, 15)
+        self.result_label = widget.Label(self.window, self.val, 25, 15, (255, 255, 255))
 
         self.window.widgets.append(
             self.result_label
@@ -22,8 +22,6 @@ class Calculator:
                 self.window.widgets.append(btn)
 
     def process_key(self, desktop, event, widget: widget.Button):
-        print(widget.label.text)
-
         if widget.label.text == "=":
             if len(self.val) == 0:
                 return

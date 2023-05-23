@@ -70,7 +70,7 @@ class Desktop:
 
         self.menubtn.on_click = self.add_apps_window
 
-        self.timetext.x = (self.taskbar.width - self.timetext.render_text().get_width()) // 2
+        self.timetext.x = (self.taskbar.width - self.timetext.render_text().get_width())
         self.timetext.y = (self.taskbar.height - self.timetext.render_text().get_height()) // 2
 
         self.taskbar.widgets.append(self.menubtn)
@@ -103,16 +103,22 @@ class Desktop:
         )
 
     def add_apps_window(self, desktop, event, widget_):
-        apps = self.winsys.new_window("Apps", None, None, 200, 200)
+        apps = self.winsys.new_window("apps_panel", 0, self.screen.get_height() - 200 - 35, 200, 200, False)
 
         calcapp = widget.Button(apps, "Calculator", 10, 10)
-        calcapp.on_click = lambda _, __, ___: Calculator(self.winsys)
+        calcapp.on_click = lambda _, __, ___: self.app_run_wrapper(_, __, ___, lambda: Calculator(self.winsys))
 
         exitbtn = widget.Button(apps, "Exit", 10, 60, color=(255, 0, 0))
-        exitbtn.on_click = lambda desktop, __, ___: desktop.sim.quit()
+        exitbtn.on_click = lambda desktop_, __, ___: desktop_.sim.quit()
 
         apps.widgets.append(calcapp)
         apps.widgets.append(exitbtn)
+
+    def app_run_wrapper(self, desktop, event, widget_, fn):
+        if (win := self.winsys.get_window_by_name("apps_panel")):
+            del self.winsys.windows[self.winsys.windows.index(win)]
+
+            fn()
 
     def exit_handler(self, sim, event: pygame.event.Event):
         if event.key == pygame.K_ESCAPE and pygame.key.get_mods() & pygame.KMOD_SHIFT:

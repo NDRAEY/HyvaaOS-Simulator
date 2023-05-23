@@ -79,9 +79,6 @@ class WindowSystem:
             y = random.randint(100, 450)
 
         if titlebar:
-            if x == 0:
-                x += 10
-            
             if y == 0:
                 y += 10
         
@@ -199,6 +196,11 @@ class WindowSystem:
 
         if 0 <= relp <= TITLEBAR_HEIGHT and win.closable and win.has_titlebar:
             return win
+
+    def get_window_by_name(self, name: str):
+        for i in self.windows:
+            if i.name == name:
+                return i
 
     def up_action(self, desktop, event: pygame.event.Event):
         self.dragging = None
