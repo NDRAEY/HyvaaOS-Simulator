@@ -5,8 +5,8 @@ pygame.mouse.set_visible(False)
 
 class Simulator:
     def __init__(self):
-        self.screen: pygame.Surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        # self.screen: pygame.Surface = pygame.display.set_mode((800, 600))
+        # self.screen: pygame.Surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen: pygame.Surface = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("HyvaaOS")
 
         self.handlers = []

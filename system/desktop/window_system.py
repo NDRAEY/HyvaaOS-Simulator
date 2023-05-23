@@ -24,6 +24,8 @@ class Window:
     height: int
     surface: pygame.surface.Surface
 
+    transparent: bool
+
     def preonclick(self, desktop, event):
         if desktop.winsys.dragging: return
         
@@ -51,6 +53,7 @@ class Window:
             i.on_click(desktop, event, i)
             return
         
+        desktop.app_run_wrapper(None, None, None, lambda: ...)
         self.on_click(desktop, event)
 
 class WindowSystem:
@@ -69,7 +72,7 @@ class WindowSystem:
         self.dragging = None
         self.dcoords = None
     
-    def new_window(self, name="Untitled", x=None, y=None, width=100, height=100, titlebar=True):
+    def new_window(self, name="Untitled", x=None, y=None, width=100, height=100, titlebar=True, transparent=False):
         print("New window:", name)
 
         if x is None:
@@ -97,7 +100,9 @@ class WindowSystem:
                 width,
                 height,
 
-                pygame.surface.Surface((width, height))
+                pygame.surface.Surface((width, height), pygame.SRCALPHA),
+
+                transparent
             )
         )
 
@@ -173,7 +178,11 @@ class WindowSystem:
 
     def render_windows(self):
         for i in self.windows:
-            i.surface.fill((64, 64, 64))
+            if not i.transparent:
+                i.surface.fill((64, 64, 64))
+            else:
+                i.surface.fill((255, 255, 255, 145))
+
 
             self.render_window(i)
 
@@ -202,7 +211,37 @@ class WindowSystem:
             if i.name == name:
                 return i
 
+    def delete_window_by_name(self, name: str):
+        if (win := self.get_window_by_name("ctxmenu")):
+            del self.windows[self.windows.index(win)]
+
+            return True
+
+    def create_file(self, desktop, event, widget: widget.Button):
+        self.delete_window_by_name("ctxmenu")
+
+        with open("New File.txt", "wb") as file:
+            file.close()
+
+    def create_context_menu_for_desktop(self, x, y):
+        win = self.new_window("ctxmenu", x, y, 160, 50, False)
+
+        button = widget.Button(win, "New file", 5, 5, 150, 40, (166, 166, 166))
+        button.on_click = self.create_file
+
+        win.widgets.append(button)
+
     def up_action(self, desktop, event: pygame.event.Event):
+        if event.button == 3:
+            if self.get_win_by_coord(*event.pos):
+                return
+
+            if self.delete_window_by_name("ctxmenu"):
+                return
+
+            self.create_context_menu_for_desktop(*event.pos)
+            return
+
         self.dragging = None
 
     def down_action(self, desktop, event):
